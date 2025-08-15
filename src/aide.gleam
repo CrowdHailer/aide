@@ -266,7 +266,7 @@ pub fn handle_request(of, server) {
     }
     Ping(_) -> PingResponse |> effect.Done
     _ -> {
-      echo of
+      // echo of
       panic as "unsupported message"
     }
   }
@@ -276,7 +276,7 @@ pub fn handle_notification(notification, _server) {
   case notification {
     Initialized(_message) -> Nil
     _ -> {
-      echo notification
+      // echo notification
       panic as "unsupported notification"
     }
   }
