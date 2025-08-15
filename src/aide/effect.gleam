@@ -1,0 +1,44 @@
+import aide/definitions
+import gleam/bit_array
+import gleam/dict.{type Dict}
+import gleam/option.{None}
+import oas/generator/utils
+
+pub type Effect(return, tool) {
+  Done(message: return)
+  CallTool(tool: tool, resume: fn(Dict(String, utils.Any)) -> return)
+  ReadResource(
+    resource: definitions.Resource,
+    resume: fn(ResourceContents) -> return,
+  )
+}
+
+pub type ResourceContents {
+  TextContents(mime_type: String, text: String)
+  BlobContents(mime_type: String, blob: BitArray)
+}
+
+pub fn resource_contents_to_result(uri, contents) {
+  case contents {
+    TextContents(mime_type:, text:) ->
+      definitions.ReadResourceResult(meta: None, contents: [
+        utils.Object(
+          dict.from_list([
+            #("uri", utils.String(uri)),
+            #("text", utils.String(text)),
+            #("mime_type", utils.String(mime_type)),
+          ]),
+        ),
+      ])
+    BlobContents(mime_type:, blob:) ->
+      definitions.ReadResourceResult(meta: None, contents: [
+        utils.Object(
+          dict.from_list([
+            #("uri", utils.String(uri)),
+            #("blob", utils.String(bit_array.base64_encode(blob, False))),
+            #("mime_type", utils.String(mime_type)),
+          ]),
+        ),
+      ])
+  }
+}
