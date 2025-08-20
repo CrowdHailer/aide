@@ -326,11 +326,10 @@ pub fn handle_request(of, server) {
 
 pub fn handle_notification(notification, _server) {
   case notification {
+    Cancelled(_message) -> Nil
     Initialized(_message) -> Nil
-    _ -> {
-      // echo notification
-      panic as "unsupported notification"
-    }
+    Progress(_message) -> Nil
+    RootsListChanged(_message) -> Nil
   }
 }
 
