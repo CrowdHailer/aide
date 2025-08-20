@@ -124,8 +124,12 @@ pub type ErrorObject {
   ErrorObject(code: Int, message: String, data: utils.Any)
 }
 
-pub fn response(id, return: t) {
-  Response(jsonrpc, id, Ok(return))
+pub fn response(id, result) {
+  Response(jsonrpc, id, result)
+}
+
+pub fn result(id, result) {
+  Response(jsonrpc, id, Ok(result))
 }
 
 pub fn response_encode(response, return_encode) {

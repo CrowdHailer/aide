@@ -1,13 +1,14 @@
 import aide/definitions
 import aide/effect
 import aide/json_rpc
+import aide/reason
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/json
 import gleam/list
 import gleam/option.{None, Some}
 import gleam/pair
-import gleam/string
+import gleam/result
 import oas/generator/utils
 
 pub fn request_decoder() {
@@ -271,11 +272,13 @@ pub fn handle_request(of, server) {
     Initialize(message) -> {
       initialize(message, server)
       |> InitializeResult
+      |> Ok
       |> effect.Done
     }
     ListTools(message) -> {
       list_tools(message, server)
       |> ListToolsResult
+      |> Ok
       |> effect.Done
     }
     CallTool(message) -> {
@@ -287,41 +290,29 @@ pub fn handle_request(of, server) {
               |> utils.any_to_json
               |> json.to_string
               |> utils.String
-            CallToolResult(definitions.CallToolResult(
-              meta: None,
-              structured_content: Some(reply),
-              content: [
-                utils.Object(
-                  dict.from_list([
-                    #("type", utils.String("text")),
-                    #("text", content),
-                  ]),
-                ),
-              ],
-              is_error: Some(False),
-            ))
+            Ok(
+              CallToolResult(definitions.CallToolResult(
+                meta: None,
+                structured_content: Some(reply),
+                content: [
+                  utils.Object(
+                    dict.from_list([
+                      #("type", utils.String("text")),
+                      #("text", content),
+                    ]),
+                  ),
+                ],
+                is_error: Some(False),
+              )),
+            )
           })
-        Error(reason) ->
-          effect.Done(
-            CallToolResult(definitions.CallToolResult(
-              meta: None,
-              structured_content: None,
-              content: [
-                utils.Object(
-                  dict.from_list([
-                    #("type", utils.String("text")),
-                    #("text", utils.String(string.inspect(reason))),
-                  ]),
-                ),
-              ],
-              is_error: Some(False),
-            )),
-          )
+        Error(reason) -> effect.Done(Error(reason))
       }
     }
     ListResources(message) -> {
       list_resources(message, server)
       |> ListResourcesResult
+      |> Ok
       |> effect.Done
     }
     ReadResource(message) -> {
@@ -330,19 +321,18 @@ pub fn handle_request(of, server) {
           effect.ReadResource(resource, fn(contents) {
             effect.resource_contents_to_result(resource.uri, contents)
             |> ReadResourceResult
+            |> Ok
           })
-        Error(Nil) ->
-          definitions.ReadResourceResult(meta: None, contents: [])
-          |> ReadResourceResult()
-          |> effect.Done
+        Error(reason) -> effect.Done(Error(reason))
       }
     }
     ListPrompts(_) -> {
       list_prompts()
       |> ListPromptsResult
+      |> Ok
       |> effect.Done
     }
-    Ping(_) -> PingResponse |> effect.Done
+    Ping(_) -> PingResponse |> Ok |> effect.Done
     _ -> {
       // echo of
       panic as "unsupported message"
@@ -390,11 +380,6 @@ fn list_tools(_message, server) {
   )
 }
 
-pub type ToolError {
-  UnknownTool
-  BadArguments
-}
-
 fn call_tool(message, server) {
   let Server(tools:, ..) = server
   let definitions.CallToolRequest(name:, arguments:) = message
@@ -415,10 +400,10 @@ fn call_tool(message, server) {
         |> utils.any_to_dynamic
       case decode.run(arguments, call) {
         Ok(args) -> Ok(args)
-        Error(_reason) -> Error(BadArguments)
+        Error(reason) -> Error(reason.invalid_arguments(name, reason))
       }
     }
-    Error(Nil) -> Error(UnknownTool)
+    Error(Nil) -> Error(reason.unknown_tool(name))
   }
 }
 
@@ -438,6 +423,7 @@ fn read_resource(message, server) {
       False -> Error(Nil)
     }
   })
+  |> result.replace_error(reason.resource_not_found(uri))
 }
 
 fn list_prompts() {
