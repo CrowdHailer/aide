@@ -8,20 +8,36 @@ import oas/generator/utils
 
 const jsonrpc = "2.0"
 
+pub type Id {
+  StringId(String)
+  NumberId(Int)
+}
+
+fn id_decoder() {
+  decode.one_of(decode.string |> decode.map(StringId), [
+    decode.int |> decode.map(NumberId),
+  ])
+}
+
+fn id_encode(id) {
+  case id {
+    StringId(string) -> json.string(string)
+    NumberId(number) -> json.int(number)
+  }
+}
+
 // Notifications have no id
 pub type Request(r, n) {
   Request(version: String, id: Id, value: r)
   Notification(version: String, value: n)
 }
 
-pub fn notification(value) {
-  Notification(version: jsonrpc, value:)
+pub fn request(id, value) {
+  Request(version: jsonrpc, id:, value:)
 }
 
-pub type ParamsDecoder(t) {
-  FromParams(decode.Decoder(t))
-  OptionalParams(decode.Decoder(t))
-  NoParams(t)
+pub fn notification(value) {
+  Notification(version: jsonrpc, value:)
 }
 
 pub fn request_decoder(request_decoders, notification_decoders, zero) {
@@ -42,7 +58,10 @@ pub fn request_decoder(request_decoders, notification_decoders, zero) {
           }
         }
         Error(Nil) ->
-          decode.failure(Notification(version, zero), "missing decoder")
+          decode.failure(
+            Notification(version, zero),
+            "missing decoder " <> method,
+          )
       }
     None ->
       case list.key_find(notification_decoders, method) {
@@ -57,26 +76,43 @@ pub fn request_decoder(request_decoders, notification_decoders, zero) {
           }
         }
         Error(Nil) ->
-          decode.failure(Notification(version, zero), "missing decoder")
+          decode.failure(
+            Notification(version, zero),
+            "missing decoder " <> method,
+          )
       }
   }
 }
 
-pub type Id {
-  StringId(String)
-  NumberId(Int)
-}
-
-fn id_decoder() {
-  decode.one_of(decode.string |> decode.map(StringId), [
-    decode.int |> decode.map(NumberId),
-  ])
-}
-
-fn encode_id(id) {
-  case id {
-    StringId(string) -> json.string(string)
-    NumberId(number) -> json.int(number)
+pub fn request_encode(request, request_encode, notification_encode) {
+  case request {
+    Request(version:, id:, value:) -> {
+      let #(method, params) = request_encode(value)
+      json.object([
+        #("jsonrpc", json.string(version)),
+        #("id", id_encode(id)),
+        #("method", json.string(method)),
+        ..case params {
+          None -> []
+          Some(params) -> [
+            #("params", params),
+          ]
+        }
+      ])
+    }
+    Notification(version:, value:) -> {
+      let #(method, params) = notification_encode(value)
+      json.object([
+        #("jsonrpc", json.string(version)),
+        #("method", json.string(method)),
+        ..case params {
+          None -> []
+          Some(params) -> [
+            #("params", params),
+          ]
+        }
+      ])
+    }
   }
 }
 
@@ -88,14 +124,18 @@ pub type ErrorObject {
   ErrorObject(code: Int, message: String, data: utils.Any)
 }
 
-pub fn encode_response(response, encode_return) {
+pub fn response(id, return: t) {
+  Response(jsonrpc, id, Ok(return))
+}
+
+pub fn response_encode(response, return_encode) {
   let Response(version:, id:, return:) = response
 
   json.object([
     #("jsonrpc", json.string(version)),
-    #("id", encode_id(id)),
+    #("id", id_encode(id)),
     case return {
-      Ok(value) -> #("result", encode_return(value))
+      Ok(value) -> #("result", return_encode(value))
       Error(ErrorObject(code:, message:, data:)) -> #(
         "error",
         json.object([
@@ -106,8 +146,4 @@ pub fn encode_response(response, encode_return) {
       )
     },
   ])
-}
-
-pub fn response(id, return: t) {
-  Response(jsonrpc, id, Ok(return))
 }
