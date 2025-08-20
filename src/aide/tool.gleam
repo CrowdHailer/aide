@@ -1,25 +1,47 @@
 import aide/definitions
 import gleam/dict
+import gleam/list
 import gleam/option.{None, Some}
 import oas/json_schema
 
 fn cast_input_schema(args) {
-  let properties =
-    dict.map_values(args, fn(_label, schema) { json_schema.to_fields(schema) })
+  let #(required, properties) = cast_schema(args)
   definitions.Internal5(
     type_: "object",
-    properties: Some(properties),
-    required: Some(dict.keys(args)),
+    properties: Some(dict.from_list(properties)),
+    required: Some(required),
   )
 }
 
-pub fn new(name, input_schema) {
+fn cast_output_schema(args) {
+  let #(required, properties) = cast_schema(args)
+  definitions.Internal6(
+    type_: "object",
+    properties: Some(dict.from_list(properties)),
+    required: Some(required),
+  )
+}
+
+fn cast_schema(args) {
+  list.map_fold(args, [], fn(acc, arg) {
+    let #(name, schema, required) = arg
+    let assert json_schema.Inline(schema) = schema
+
+    let acc = case required {
+      True -> [name, ..acc]
+      False -> acc
+    }
+    #(acc, #(name, json_schema.to_fields(schema)))
+  })
+}
+
+pub fn new(name, input_schema, output_schema) {
   definitions.Tool(
     name: name,
     title: None,
     description: None,
     input_schema: cast_input_schema(input_schema),
-    output_schema: None,
+    output_schema: Some(cast_output_schema(output_schema)),
     meta: None,
     annotations: None,
   )

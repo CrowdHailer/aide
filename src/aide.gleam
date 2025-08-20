@@ -238,12 +238,7 @@ fn do_response_encode(result) {
 pub type Server(tool) {
   Server(
     implementation: definitions.Implementation,
-    tools: List(
-      #(
-        definitions.Tool,
-        fn(dict.Dict(String, utils.Any)) -> Result(tool, String),
-      ),
-    ),
+    tools: List(#(definitions.Tool, decode.Decoder(tool))),
     resources: List(definitions.Resource),
   )
 }
@@ -412,11 +407,17 @@ fn call_tool(message, server) {
       }
     })
   case found {
-    Ok(call) ->
-      case call(arguments |> option.unwrap(dict.new())) {
+    Ok(call) -> {
+      let arguments =
+        arguments
+        |> option.unwrap(dict.new())
+        |> utils.Object
+        |> utils.any_to_dynamic
+      case decode.run(arguments, call) {
         Ok(args) -> Ok(args)
         Error(_reason) -> Error(BadArguments)
       }
+    }
     Error(Nil) -> Error(UnknownTool)
   }
 }
