@@ -1,0 +1,40 @@
+---
+version: 1.3.0
+title: simple_object_test
+file: ./test/aide/generator/tool_test.gleam
+test_name: simple_object_test
+---
+import gleam/dynamic/decode
+import gleam/json
+import gleam/option.{type Option, None}
+import oas/generator/utils
+
+pub type Call {
+  Flip(input: FlipInput, cast: fn(FlipOutput) -> dict.Dict)
+}
+
+pub type FlipInput {
+  FlipInput(value: Bool)
+}
+
+pub type FlipOutput {
+  FlipOutput(output: Bool)
+}
+
+pub fn flip_output_decoder() {
+  use output <- decode.field("output", decode.bool)
+  decode.success(FlipOutput(output: output))
+}
+
+pub fn flip_output_encode(data: FlipOutput) {
+  utils.object([#("output", json.bool(data.output))])
+}
+
+pub fn flip_input_decoder() {
+  use value <- decode.field("value", decode.bool)
+  decode.success(FlipInput(value: value))
+}
+
+pub fn flip_input_encode(data: FlipInput) {
+  utils.object([#("value", json.bool(data.value))])
+}
