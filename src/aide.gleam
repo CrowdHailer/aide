@@ -24,77 +24,61 @@ pub fn request_encode(request) {
 }
 
 fn do_request_encode(request) {
+  let method = request_method(request)
+  let params = case request {
+    Initialize(request) -> definitions.initialize_request_encode(request)
+    Ping(request) -> definitions.ping_request_encode(request)
+    ListResources(request) -> definitions.list_resources_request_encode(request)
+    ListResourceTemplates(request) ->
+      definitions.list_resource_templates_request_encode(request)
+    ReadResource(request) -> definitions.read_resource_request_encode(request)
+    Subscribe(request) -> definitions.subscribe_request_encode(request)
+    Unsubscribe(request) -> definitions.unsubscribe_request_encode(request)
+    ListPrompts(request) -> definitions.list_prompts_request_encode(request)
+    GetPrompt(request) -> definitions.get_prompt_request_encode(request)
+    ListTools(request) -> definitions.list_tools_request_encode(request)
+    CallTool(request) -> definitions.call_tool_request_encode(request)
+    SetLevel(request) -> definitions.set_level_request_encode(request)
+    Complete(request) -> definitions.complete_request_encode(request)
+  }
+  #(method, Some(params))
+}
+
+pub fn request_method(request) {
   case request {
-    Initialize(request) -> #(
-      "initialize",
-      Some(definitions.initialize_request_encode(request)),
-    )
-    Ping(request) -> #("ping", Some(definitions.ping_request_encode(request)))
-    ListResources(request) -> #(
-      "resources/list",
-      Some(definitions.list_resources_request_encode(request)),
-    )
-    ListResourceTemplates(request) -> #(
-      "resources/templates/list",
-      Some(definitions.list_resource_templates_request_encode(request)),
-    )
-    ReadResource(request) -> #(
-      "resources/read",
-      Some(definitions.read_resource_request_encode(request)),
-    )
-    Subscribe(request) -> #(
-      "resources/subscribe",
-      Some(definitions.subscribe_request_encode(request)),
-    )
-    Unsubscribe(request) -> #(
-      "resources/unsubscribe",
-      Some(definitions.unsubscribe_request_encode(request)),
-    )
-    ListPrompts(request) -> #(
-      "prompts/list",
-      Some(definitions.list_prompts_request_encode(request)),
-    )
-    GetPrompt(request) -> #(
-      "prompts/get",
-      Some(definitions.get_prompt_request_encode(request)),
-    )
-    ListTools(request) -> #(
-      "tools/list",
-      Some(definitions.list_tools_request_encode(request)),
-    )
-    CallTool(request) -> #(
-      "tools/call",
-      Some(definitions.call_tool_request_encode(request)),
-    )
-    SetLevel(request) -> #(
-      "logging/setLevel",
-      Some(definitions.set_level_request_encode(request)),
-    )
-    Complete(request) -> #(
-      "completion/complete",
-      Some(definitions.complete_request_encode(request)),
-    )
+    Initialize(_) -> "initialize"
+    Ping(_) -> "ping"
+    ListResources(_) -> "resources/list"
+    ListResourceTemplates(_) -> "resources/templates/list"
+    ReadResource(_) -> "resources/read"
+    Subscribe(_) -> "resources/subscribe"
+    Unsubscribe(_) -> "resources/unsubscribe"
+    ListPrompts(_) -> "prompts/list"
+    GetPrompt(_) -> "prompts/get"
+    ListTools(_) -> "tools/list"
+    CallTool(_) -> "tools/call"
+    SetLevel(_) -> "logging/setLevel"
+    Complete(_) -> "completion/complete"
   }
 }
 
 fn do_notification_encode(notification) {
+  let method = notification_method(notification)
+  let params = case notification {
+    Cancelled(n) -> definitions.cancelled_notification_encode(n)
+    Initialized(n) -> definitions.initialized_notification_encode(n)
+    Progress(n) -> definitions.progress_notification_encode(n)
+    RootsListChanged(n) -> definitions.roots_list_changed_notification_encode(n)
+  }
+  #(method, Some(params))
+}
+
+pub fn notification_method(notification) {
   case notification {
-    Cancelled(notification) -> #(
-      "notifications/cancelled",
-      Some(definitions.cancelled_notification_encode(notification)),
-    )
-    Initialized(notification) -> #(
-      "notifications/initialized",
-      Some(definitions.initialized_notification_encode(notification)),
-    )
-    Progress(notification) -> #(
-      "notifications/progress",
-      Some(definitions.progress_notification_encode(notification)),
-    )
-    RootsListChanged(notification) -> #(
-      "notifications/roots/list_changed",
-      Some(definitions.roots_list_changed_notification_encode(notification)),
-    )
+    Cancelled(_) -> "notifications/cancelled"
+    Initialized(_) -> "notifications/initialized"
+    Progress(_) -> "notifications/progress"
+    RootsListChanged(_) -> "notifications/roots/list_changed"
   }
 }
 
