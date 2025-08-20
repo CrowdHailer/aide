@@ -1,5 +1,6 @@
 import gleam/dynamic
 import gleam/dynamic/decode
+import gleam/int
 import gleam/json
 import gleam/list
 import gleam/option.{None, Some}
@@ -23,6 +24,13 @@ fn id_encode(id) {
   case id {
     StringId(string) -> json.string(string)
     NumberId(number) -> json.int(number)
+  }
+}
+
+pub fn id_to_string(id) {
+  case id {
+    NumberId(id) -> int.to_string(id)
+    StringId(id) -> id
   }
 }
 
