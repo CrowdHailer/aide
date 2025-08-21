@@ -14,7 +14,8 @@ version = "1.0.0"
 
 [dependencies]
 gleam_stdlib = ">= 0.44.0 and < 2.0.0"
-aide = ">= 0.1.0 and < 1.0.0"
+# aide = ">= 0.1.0 and < 1.0.0"
+aide = { path = ".." }
 # oas for json_schema
 oas = ">= 7.2.0 and < 8.0.0"
 glance = "< 4.0.0"

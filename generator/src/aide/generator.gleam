@@ -1,3 +1,4 @@
+import aide/tool
 import glance
 import glance_printer
 import gleam/dict
@@ -10,23 +11,14 @@ import oas/json_schema
 
 // [decode.map(flip_input_decoder,Flip(_, flip_output_encode))]
 
-pub type ObjectSchema =
-  List(#(String, json_schema.Ref(json_schema.Schema), Bool))
-
-pub type ToolSpec {
-  // Can't creat constant with dictionary so pass in list or input/output
-  // I don't think that order matters for named arguments but maybe it will.
-  ToolSpec(name: String, input: ObjectSchema, output: ObjectSchema)
-}
-
-fn to_schema(fields: ObjectSchema) -> json_schema.Schema {
+fn to_schema(fields: tool.ObjectSchema) -> json_schema.Schema {
   json_schema.object(fields)
 }
 
 pub fn generate(tools) {
   let #(tools, specs) =
     list.map(tools, fn(tool) {
-      let ToolSpec(name:, input:, output:) = tool
+      let tool.Spec(name:, input:, output:) = tool
       #(name, [
         #(name <> "_input", input |> to_schema),
         #(name <> "_output", output |> to_schema),
