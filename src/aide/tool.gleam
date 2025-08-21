@@ -54,3 +54,12 @@ pub fn set_title(tool, title) {
 pub fn set_description(tool, description) {
   definitions.Tool(..tool, description: Some(description))
 }
+
+pub type Spec {
+  // Can't creat constant with dictionary so pass in list or input/output
+  // I don't think that order matters for named arguments but maybe it will.
+  Spec(name: String, input: ObjectSchema, output: ObjectSchema)
+}
+
+pub type ObjectSchema =
+  List(#(String, json_schema.Ref(json_schema.Schema), Bool))
