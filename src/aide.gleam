@@ -269,26 +269,33 @@ pub fn handle_request(of, server) {
       case call_tool(message, server) {
         Ok(args) ->
           effect.CallTool(args, fn(reply) {
-            let content =
-              utils.Object(reply)
-              |> utils.any_to_json
-              |> json.to_string
-              |> utils.String
-            Ok(
-              CallToolResult(definitions.CallToolResult(
-                meta: None,
-                structured_content: Some(reply),
-                content: [
-                  utils.Object(
-                    dict.from_list([
-                      #("type", utils.String("text")),
-                      #("text", content),
-                    ]),
-                  ),
-                ],
-                is_error: Some(False),
-              )),
-            )
+            let result = case reply {
+              Ok(reply) -> {
+                let content =
+                  utils.Object(reply)
+                  |> utils.any_to_json
+                  |> json.to_string
+
+                definitions.CallToolResult(
+                  meta: None,
+                  structured_content: Some(reply),
+                  content: [
+                    text_content(content),
+                  ],
+                  is_error: Some(False),
+                )
+              }
+              Error(reason) ->
+                definitions.CallToolResult(
+                  meta: None,
+                  structured_content: None,
+                  content: [
+                    text_content(reason),
+                  ],
+                  is_error: Some(True),
+                )
+            }
+            Ok(CallToolResult(result))
           })
         Error(reason) -> effect.Done(Error(reason))
       }
@@ -322,6 +329,15 @@ pub fn handle_request(of, server) {
       panic as "unsupported message"
     }
   }
+}
+
+fn text_content(content) {
+  utils.Object(
+    dict.from_list([
+      #("type", utils.String("text")),
+      #("text", utils.String(content)),
+    ]),
+  )
 }
 
 pub fn handle_notification(notification, _server) {

@@ -6,7 +6,10 @@ import oas/generator/utils
 
 pub type Effect(return, tool) {
   Done(message: return)
-  CallTool(tool: tool, resume: fn(Dict(String, utils.Any)) -> return)
+  CallTool(
+    tool: tool,
+    resume: fn(Result(Dict(String, utils.Any), String)) -> return,
+  )
   ReadResource(
     resource: definitions.Resource,
     resume: fn(ResourceContents) -> return,
