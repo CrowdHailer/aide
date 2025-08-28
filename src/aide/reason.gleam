@@ -13,6 +13,14 @@ pub fn unknown_tool(tool) {
   )
 }
 
+pub fn unknown_prompt(prompt) {
+  json_rpc.ErrorObject(
+    code: -32_602,
+    message: "Unknown prompt: " <> prompt,
+    data: utils.Object(dict.from_list([#("prompt", utils.String(prompt))])),
+  )
+}
+
 pub fn invalid_arguments(tool, decode) {
   let reason =
     list.map(decode, fn(error) {

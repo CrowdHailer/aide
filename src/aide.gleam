@@ -220,11 +220,12 @@ fn do_response_encode(result) {
   }
 }
 
-pub type Server(tool) {
+pub type Server(tool, prompt) {
   Server(
     implementation: definitions.Implementation,
     tools: List(#(definitions.Tool, decode.Decoder(tool))),
     resources: List(definitions.Resource),
+    prompts: List(#(definitions.Prompt, decode.Decoder(prompt))),
   )
 }
 
@@ -239,7 +240,18 @@ pub fn get_tool_by_name(server, name) {
   })
 }
 
-pub fn handle_rpc(request, server) {
+pub fn get_prompt_by_name(server, name) {
+  let Server(prompts:, ..) = server
+  list.find(prompts, fn(prompt) {
+    let #(definitions.Prompt(name: n, ..), _decoder) = prompt
+    case name == n {
+      True -> True
+      False -> False
+    }
+  })
+}
+
+pub fn handle_rpc(request, server: Server(a, b)) {
   case request {
     json_rpc.Request(id:, value:, ..) ->
       case handle_request(value, server) {
@@ -254,6 +266,10 @@ pub fn handle_rpc(request, server) {
           effect.ReadResource(resource, fn(reply) {
             json_rpc.response(id, resume(reply)) |> Some
           })
+        effect.GetPrompt(prompt, resume) ->
+          effect.GetPrompt(prompt, fn(reply) {
+            json_rpc.response(id, resume(reply)) |> Some
+          })
       }
     json_rpc.Notification(value:, ..) -> {
       let Nil = handle_notification(value, server)
@@ -262,7 +278,7 @@ pub fn handle_rpc(request, server) {
   }
 }
 
-pub fn handle_request(of, server) {
+pub fn handle_request(of, server: Server(a, b)) {
   case of {
     Initialize(message) -> {
       initialize(message, server)
@@ -294,11 +310,18 @@ pub fn handle_request(of, server) {
         Error(reason) -> effect.Done(Error(reason))
       }
     }
-    ListPrompts(_) -> {
-      list_prompts()
+    ListPrompts(message) -> {
+      list_prompts(message, server)
       |> ListPromptsResult
       |> Ok
       |> effect.Done
+    }
+    GetPrompt(message) -> {
+      case get_prompt(message, server) {
+        Ok(#(prompt, args)) ->
+          effect.GetPrompt(args, finish_get_prompt(prompt, _))
+        Error(reason) -> effect.Done(Error(reason))
+      }
     }
     Ping(_) -> PingResponse |> Ok |> effect.Done
     _ -> {
@@ -343,6 +366,13 @@ fn finish_read_resource(resource, contents) {
   effect.resource_contents_to_result(uri, contents)
   |> ReadResourceResult
   |> Ok
+}
+
+fn finish_get_prompt(prompt, messages) {
+  let definitions.Prompt(description:, ..) = prompt
+
+  let result = definitions.GetPromptResult(meta: None, description:, messages:)
+  Ok(GetPromptResult(result))
 }
 
 fn text_content(content) {
@@ -430,6 +460,29 @@ fn read_resource(message, server) {
   |> result.replace_error(reason.resource_not_found(uri))
 }
 
-fn list_prompts() {
-  definitions.ListPromptsResult(meta: None, prompts: [], next_cursor: None)
+fn list_prompts(message, server) {
+  let Server(prompts:, ..) = server
+  let definitions.ListPromptsRequest(cursor: _) = message
+
+  let prompts = list.map(prompts, pair.first)
+  definitions.ListPromptsResult(meta: None, prompts:, next_cursor: None)
+}
+
+fn get_prompt(message, server) {
+  let definitions.GetPromptRequest(name:, arguments:) = message
+  case get_prompt_by_name(server, name) {
+    Ok(#(prompt, decoder)) -> {
+      let arguments =
+        arguments
+        |> option.unwrap(dict.new())
+        |> dict.map_values(fn(_k, v) { utils.String(v) })
+        |> utils.Object
+        |> utils.any_to_dynamic
+      case decode.run(arguments, decoder) {
+        Ok(args) -> Ok(#(prompt, args))
+        Error(reason) -> Error(reason.invalid_arguments(name, reason))
+      }
+    }
+    Error(Nil) -> Error(reason.unknown_prompt(name))
+  }
 }

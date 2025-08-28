@@ -4,7 +4,7 @@ import gleam/dict.{type Dict}
 import gleam/option.{None}
 import oas/generator/utils
 
-pub type Effect(return, tool) {
+pub type Effect(return, tool, prompt) {
   Done(message: return)
   CallTool(
     tool: tool,
@@ -13,6 +13,11 @@ pub type Effect(return, tool) {
   ReadResource(
     resource: definitions.Resource,
     resume: fn(ResourceContents) -> return,
+  )
+  GetPrompt(
+    prompt: prompt,
+    // There is no "is_error" field on GetPromptReply.
+    resume: fn(List(definitions.PromptMessage)) -> return,
   )
 }
 
