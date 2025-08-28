@@ -228,6 +228,17 @@ pub type Server(tool) {
   )
 }
 
+pub fn get_tool_by_name(server, name) {
+  let Server(tools:, ..) = server
+  list.find(tools, fn(tool) {
+    let #(definitions.Tool(name: n, ..), _decoder) = tool
+    case name == n {
+      True -> True
+      False -> False
+    }
+  })
+}
+
 pub fn handle_rpc(request, server) {
   case request {
     json_rpc.Request(id:, value:, ..) ->
@@ -380,24 +391,15 @@ fn list_tools(_message, server) {
 }
 
 fn call_tool(message, server) {
-  let Server(tools:, ..) = server
   let definitions.CallToolRequest(name:, arguments:) = message
-  let found =
-    list.find_map(tools, fn(tool) {
-      let #(definitions.Tool(name: n, ..), call) = tool
-      case name == n {
-        True -> Ok(call)
-        False -> Error(Nil)
-      }
-    })
-  case found {
-    Ok(call) -> {
+  case get_tool_by_name(server, name) {
+    Ok(#(_tool, decoder)) -> {
       let arguments =
         arguments
         |> option.unwrap(dict.new())
         |> utils.Object
         |> utils.any_to_dynamic
-      case decode.run(arguments, call) {
+      case decode.run(arguments, decoder) {
         Ok(args) -> Ok(args)
         Error(reason) -> Error(reason.invalid_arguments(name, reason))
       }

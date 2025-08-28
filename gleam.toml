@@ -1,5 +1,5 @@
 name = "aide"
-version = "0.4.0"
+version = "0.4.1"
 
 description = "Build Model Context Protocol (MCP) Servers (clients coming soon)."
 licences = ["Apache-2.0"]
