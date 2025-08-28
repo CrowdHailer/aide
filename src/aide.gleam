@@ -278,36 +278,7 @@ pub fn handle_request(of, server) {
     }
     CallTool(message) -> {
       case call_tool(message, server) {
-        Ok(args) ->
-          effect.CallTool(args, fn(reply) {
-            let result = case reply {
-              Ok(reply) -> {
-                let content =
-                  utils.Object(reply)
-                  |> utils.any_to_json
-                  |> json.to_string
-
-                definitions.CallToolResult(
-                  meta: None,
-                  structured_content: Some(reply),
-                  content: [
-                    text_content(content),
-                  ],
-                  is_error: Some(False),
-                )
-              }
-              Error(reason) ->
-                definitions.CallToolResult(
-                  meta: None,
-                  structured_content: None,
-                  content: [
-                    text_content(reason),
-                  ],
-                  is_error: Some(True),
-                )
-            }
-            Ok(CallToolResult(result))
-          })
+        Ok(args) -> effect.CallTool(args, finish_call_tool)
         Error(reason) -> effect.Done(Error(reason))
       }
     }
@@ -319,12 +290,7 @@ pub fn handle_request(of, server) {
     }
     ReadResource(message) -> {
       case read_resource(message, server) {
-        Ok(resource) ->
-          effect.ReadResource(resource, fn(contents) {
-            effect.resource_contents_to_result(resource.uri, contents)
-            |> ReadResourceResult
-            |> Ok
-          })
+        Ok(r) -> effect.ReadResource(r, finish_read_resource(r, _))
         Error(reason) -> effect.Done(Error(reason))
       }
     }
@@ -340,6 +306,43 @@ pub fn handle_request(of, server) {
       panic as "unsupported message"
     }
   }
+}
+
+fn finish_call_tool(reply) {
+  let result = case reply {
+    Ok(reply) -> {
+      let content =
+        utils.Object(reply)
+        |> utils.any_to_json
+        |> json.to_string
+
+      definitions.CallToolResult(
+        meta: None,
+        structured_content: Some(reply),
+        content: [
+          text_content(content),
+        ],
+        is_error: Some(False),
+      )
+    }
+    Error(reason) ->
+      definitions.CallToolResult(
+        meta: None,
+        structured_content: None,
+        content: [
+          text_content(reason),
+        ],
+        is_error: Some(True),
+      )
+  }
+  Ok(CallToolResult(result))
+}
+
+fn finish_read_resource(resource, contents) {
+  let definitions.Resource(uri:, ..) = resource
+  effect.resource_contents_to_result(uri, contents)
+  |> ReadResourceResult
+  |> Ok
 }
 
 fn text_content(content) {
