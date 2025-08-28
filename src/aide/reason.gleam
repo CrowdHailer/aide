@@ -21,6 +21,14 @@ pub fn unknown_prompt(prompt) {
   )
 }
 
+pub fn invalid_log_level(level) {
+  json_rpc.ErrorObject(
+    code: -32_602,
+    message: "Invalid log level: " <> level,
+    data: utils.Object(dict.from_list([#("level", utils.String(level))])),
+  )
+}
+
 pub fn invalid_arguments(tool, decode) {
   let reason =
     list.map(decode, fn(error) {

@@ -1,9 +1,11 @@
 import aide/definitions
 import aide/effect
 import aide/json_rpc
+import aide/log
 import aide/reason
 import gleam/dict
 import gleam/dynamic/decode
+import gleam/io
 import gleam/json
 import gleam/list
 import gleam/option.{None, Some}
@@ -323,6 +325,7 @@ pub fn handle_request(of, server: Server(a, b)) {
         Error(reason) -> effect.Done(Error(reason))
       }
     }
+    SetLevel(message) -> set_level(message) |> effect.Done
     Ping(_) -> PingResponse |> Ok |> effect.Done
     _ -> {
       // echo of
@@ -484,5 +487,17 @@ fn get_prompt(message, server) {
       }
     }
     Error(Nil) -> Error(reason.unknown_prompt(name))
+  }
+}
+
+fn set_level(message) {
+  let definitions.SetLevelRequest(level:) = message
+  case log.level_from_string(level) {
+    Ok(level) -> {
+      io.println("client set log level: " <> log.level_to_string(level))
+      // PingResponse is empty object
+      Ok(PingResponse)
+    }
+    Error(Nil) -> Error(reason.invalid_log_level(level))
   }
 }
