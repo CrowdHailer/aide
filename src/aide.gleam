@@ -227,6 +227,7 @@ pub type Server(tool, prompt) {
     implementation: definitions.Implementation,
     tools: List(#(definitions.Tool, decode.Decoder(tool))),
     resources: List(definitions.Resource),
+    resource_templates: List(definitions.ResourceTemplate),
     prompts: List(#(definitions.Prompt, decode.Decoder(prompt))),
   )
 }
@@ -306,12 +307,25 @@ pub fn handle_request(of, server: Server(a, b)) {
       |> Ok
       |> effect.Done
     }
+    ListResourceTemplates(message) -> {
+      list_resource_templates(message, server)
+      |> ListResourceTemplatesResult
+      |> Ok
+      |> effect.Done
+    }
     ReadResource(message) -> {
       case read_resource(message, server) {
         Ok(r) -> effect.ReadResource(r, finish_read_resource(r, _))
         Error(reason) -> effect.Done(Error(reason))
       }
     }
+    // Subscription to resources
+    Subscribe(_message) ->
+      reason.method_not_available("resources/subscribe") |> Error |> effect.Done
+    Unsubscribe(_message) ->
+      reason.method_not_available("resources/unsubscribe")
+      |> Error
+      |> effect.Done
     ListPrompts(message) -> {
       list_prompts(message, server)
       |> ListPromptsResult
@@ -325,12 +339,11 @@ pub fn handle_request(of, server: Server(a, b)) {
         Error(reason) -> effect.Done(Error(reason))
       }
     }
+    // Will this need to be an effect to allow autocompleting through resource templates
+    Complete(_message) ->
+      reason.method_not_available("completion/complete") |> Error |> effect.Done
     SetLevel(message) -> set_level(message) |> effect.Done
     Ping(_) -> PingResponse |> Ok |> effect.Done
-    _ -> {
-      // echo of
-      panic as "unsupported message"
-    }
   }
 }
 
@@ -447,6 +460,15 @@ fn call_tool(message, server) {
 fn list_resources(_cursor, server) {
   let Server(resources:, ..) = server
   definitions.ListResourcesResult(meta: None, resources:, next_cursor: None)
+}
+
+fn list_resource_templates(_cursor, server) {
+  let Server(resource_templates:, ..) = server
+  definitions.ListResourceTemplatesResult(
+    meta: None,
+    resource_templates:,
+    next_cursor: None,
+  )
 }
 
 fn read_resource(message, server) {

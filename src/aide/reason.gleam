@@ -5,6 +5,15 @@ import gleam/list
 import gleam/string
 import oas/generator/utils
 
+pub fn method_not_available(method) {
+  json_rpc.ErrorObject(
+    code: -32_601,
+    message: "Method unavailable: " <> method,
+    data: utils.Object(dict.from_list([#("method", utils.String(method))])),
+  )
+}
+
+/// Used for unknown and unavailable
 pub fn unknown_tool(tool) {
   json_rpc.ErrorObject(
     code: -32_602,
