@@ -1,7 +1,7 @@
 import aide/definitions
 import gleam/bit_array
 import gleam/dict.{type Dict}
-import gleam/option.{None}
+import gleam/option.{type Option, None}
 import oas/generator/utils
 
 pub type Effect(return, tool, prompt) {
@@ -19,6 +19,21 @@ pub type Effect(return, tool, prompt) {
     // There is no "is_error" field on GetPromptReply.
     resume: fn(List(definitions.PromptMessage)) -> return,
   )
+  Complete(
+    ref: CompletionReference,
+    argument: CompleteArgument,
+    context: Dict(String, String),
+    resume: fn(List(String)) -> return,
+  )
+}
+
+pub type CompleteArgument {
+  CompleteArgument(name: String, value: String)
+}
+
+pub type CompletionReference {
+  PromptReference(name: String, title: Option(String))
+  ResourceTemplateReference(uri: String)
 }
 
 pub type ResourceContents {

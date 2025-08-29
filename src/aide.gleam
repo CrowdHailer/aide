@@ -273,6 +273,10 @@ pub fn handle_rpc(request, server: Server(a, b)) {
           effect.GetPrompt(prompt, fn(reply) {
             json_rpc.response(id, resume(reply)) |> Some
           })
+        effect.Complete(ref, argument, context, resume) ->
+          effect.Complete(ref, argument, context, fn(reply) {
+            json_rpc.response(id, resume(reply)) |> Some
+          })
       }
     json_rpc.Notification(value:, ..) -> {
       let Nil = handle_notification(value, server)
@@ -340,8 +344,7 @@ pub fn handle_request(of, server: Server(a, b)) {
       }
     }
     // Will this need to be an effect to allow autocompleting through resource templates
-    Complete(_message) ->
-      reason.method_not_available("completion/complete") |> Error |> effect.Done
+    Complete(message) -> complete(message)
     SetLevel(message) -> set_level(message) |> effect.Done
     Ping(_) -> PingResponse |> Ok |> effect.Done
   }
@@ -416,10 +419,10 @@ fn initialize(_message, server) {
     meta: None,
     instructions: None,
     capabilities: definitions.ServerCapabilities(
-      completions: None,
+      completions: Some(dict.new()),
       experimental: None,
-      logging: None,
-      prompts: None,
+      logging: Some(dict.new()),
+      prompts: Some(definitions.Internal9(list_changed: Some(True))),
       tools: Some(definitions.Internal11(list_changed: Some(False))),
       resources: Some(definitions.Internal10(
         subscribe: Some(False),
@@ -510,6 +513,46 @@ fn get_prompt(message, server) {
     }
     Error(Nil) -> Error(reason.unknown_prompt(name))
   }
+}
+
+fn complete(message) {
+  let definitions.CompleteRequest(context:, argument:, ref:) = message
+
+  let definitions.Internal7(name:, value:) = argument
+  let argument = effect.CompleteArgument(name:, value:)
+
+  let context = case context {
+    Some(definitions.Internal8(arguments: Some(previous))) -> previous
+    _ -> dict.new()
+  }
+  let assert utils.Object(properties) = ref
+  let assert Ok(utils.String(type_)) = dict.get(properties, "type")
+  case type_ {
+    "ref/resource" -> {
+      let assert Ok(utils.String(uri)) = dict.get(properties, "uri")
+      let ref = effect.ResourceTemplateReference(uri)
+
+      effect.Complete(ref:, argument:, context:, resume: finish_complete)
+    }
+    _ ->
+      reason.method_not_available("completion/complete") |> Error |> effect.Done
+  }
+}
+
+fn finish_complete(completion) {
+  complete_results(completion)
+  |> CompleteResult
+  |> Ok
+}
+
+fn complete_results(values) {
+  let total = list.length(values)
+  let #(values, has_more) = case total > 100 {
+    True -> #(list.take(values, 100), True)
+    False -> #(values, False)
+  }
+  definitions.Internal12(values:, has_more: Some(has_more), total: Some(total))
+  |> definitions.CompleteResult(None, _)
 }
 
 fn set_level(message) {
