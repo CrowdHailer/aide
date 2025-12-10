@@ -3,6 +3,7 @@ import aide/effect
 import aide/json_rpc
 import aide/log
 import aide/reason
+import aide/tool
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/io
@@ -225,7 +226,7 @@ fn do_response_encode(result) {
 pub type Server(tool, prompt) {
   Server(
     implementation: definitions.Implementation,
-    tools: List(#(definitions.Tool, decode.Decoder(tool))),
+    tools: List(tool.Tool(tool)),
     resources: List(definitions.Resource),
     resource_templates: List(definitions.ResourceTemplate),
     prompts: List(#(definitions.Prompt, decode.Decoder(prompt))),
@@ -235,7 +236,7 @@ pub type Server(tool, prompt) {
 pub fn get_tool_by_name(server, name) {
   let Server(tools:, ..) = server
   list.find(tools, fn(tool) {
-    let #(definitions.Tool(name: n, ..), _decoder) = tool
+    let tool.Tool(spec: tool.Spec(name: n, ..), ..) = tool
     case name == n {
       True -> True
       False -> False
@@ -438,14 +439,14 @@ fn list_tools(_message, server) {
   definitions.ListToolsResult(
     meta: None,
     next_cursor: None,
-    tools: list.map(tools, pair.first),
+    tools: list.map(tools, tool.to_api_definition),
   )
 }
 
 fn call_tool(message, server) {
   let definitions.CallToolRequest(name:, arguments:) = message
   case get_tool_by_name(server, name) {
-    Ok(#(_tool, decoder)) -> {
+    Ok(tool.Tool(decoder:, ..)) -> {
       let arguments =
         arguments
         |> option.unwrap(dict.new())

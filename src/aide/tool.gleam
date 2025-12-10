@@ -1,5 +1,6 @@
 import aide/definitions
 import gleam/dict
+import gleam/dynamic/decode
 import gleam/list
 import gleam/option.{None, Some}
 import oas/json_schema
@@ -23,18 +24,6 @@ fn cast_schema(args) {
   )
 }
 
-pub fn new(name, input_schema, output_schema) {
-  definitions.Tool(
-    name: name,
-    title: None,
-    description: None,
-    input_schema: cast_schema(input_schema),
-    output_schema: Some(cast_schema(output_schema)),
-    meta: None,
-    annotations: None,
-  )
-}
-
 pub fn set_title(tool, title) {
   definitions.Tool(..tool, title: Some(title))
 }
@@ -43,11 +32,44 @@ pub fn set_description(tool, description) {
   definitions.Tool(..tool, description: Some(description))
 }
 
+/// The specification for an MCP tool.
+///
+/// This type cannot include the decoder as the decoders (and encoder) are generated from this spec.
+/// The Tool type is the runtime type that includes the decoder.
 pub type Spec {
   // Can't creat constant with dictionary so pass in list or input/output
   // I don't think that order matters for named arguments but maybe it will.
-  Spec(name: String, input: ObjectSchema, output: ObjectSchema)
+  Spec(
+    name: String,
+    title: String,
+    description: String,
+    input: ObjectSchema,
+    output: ObjectSchema,
+  )
+}
+
+/// The spec and decoder of an MCP tool.
+///
+/// Tools are defined with only a decoder because implementations of a tool can be sync or async.
+/// See `aide/effect.Effect` for implementing tool handling.
+pub type Tool(t) {
+  Tool(spec: Spec, decoder: decode.Decoder(t))
+}
+
+pub fn to_api_definition(tool) {
+  let Tool(spec:, ..) = tool
+  definitions.Tool(
+    meta: None,
+    annotations: None,
+    description: Some(spec.description),
+    input_schema: cast_schema(spec.input),
+    name: spec.name,
+    output_schema: Some(cast_schema(spec.output)),
+    title: Some(spec.title),
+  )
 }
 
 pub type ObjectSchema =
   List(#(String, json_schema.Ref(json_schema.Schema), Bool))
+// Add description etc to spec?
+// Spec to definitions function in here
