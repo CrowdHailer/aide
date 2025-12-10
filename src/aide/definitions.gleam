@@ -1,4 +1,3 @@
-// This file is generated using `gleam dev` and should not be modified
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/json
@@ -58,7 +57,7 @@ pub type Jsonrpcrequest {
     id: RequestId,
     jsonrpc: String,
     method_: String,
-    params: Option(Internal1),
+    params: Option(Anon8593718a),
   )
 }
 
@@ -87,7 +86,7 @@ pub type ToolAnnotations {
 
 pub type PingRequest {
   PingRequest(
-    meta: Option(Internal2),
+    meta: Option(Anon345b3036),
     additional_properties: dict.Dict(String, utils.Any),
   )
 }
@@ -101,7 +100,7 @@ pub type RootsListChangedNotification {
 
 pub type Request {
   Request(
-    meta: Option(Internal3),
+    meta: Option(Anon345b3036),
     additional_properties: dict.Dict(String, utils.Any),
   )
 }
@@ -118,7 +117,7 @@ pub type ClientCapabilities {
   ClientCapabilities(
     elicitation: Option(dict.Dict(String, utils.Any)),
     experimental: Option(dict.Dict(String, dict.Dict(String, utils.Any))),
-    roots: Option(Internal4),
+    roots: Option(Anon405cc9c3),
     sampling: Option(dict.Dict(String, utils.Any)),
   )
 }
@@ -267,9 +266,9 @@ pub type Tool {
     meta: Option(dict.Dict(String, utils.Any)),
     annotations: Option(ToolAnnotations),
     description: Option(String),
-    input_schema: Internal5,
+    input_schema: AnonA5a007cd,
     name: String,
-    output_schema: Option(Internal6),
+    output_schema: Option(AnonA5a007cd),
     title: Option(String),
   )
 }
@@ -343,8 +342,8 @@ pub type ListRootsResult {
 
 pub type CompleteRequest {
   CompleteRequest(
-    argument: Internal7,
-    context: Option(Internal8),
+    argument: Anon68f425dd,
+    context: Option(Anon4c2c4139),
     ref: utils.Any,
   )
 }
@@ -380,9 +379,9 @@ pub type ServerCapabilities {
     completions: Option(dict.Dict(String, utils.Any)),
     experimental: Option(dict.Dict(String, dict.Dict(String, utils.Any))),
     logging: Option(dict.Dict(String, utils.Any)),
-    prompts: Option(Internal9),
-    resources: Option(Internal10),
-    tools: Option(Internal11),
+    prompts: Option(Anon405cc9c3),
+    resources: Option(Anon3889ba9d),
+    tools: Option(Anon405cc9c3),
   )
 }
 
@@ -423,7 +422,7 @@ pub type ListResourceTemplatesRequest {
 pub type CompleteResult {
   CompleteResult(
     meta: Option(dict.Dict(String, utils.Any)),
-    completion: Internal12,
+    completion: AnonA60b75a3,
   )
 }
 
@@ -461,7 +460,7 @@ pub type ResourceUpdatedNotification {
 }
 
 pub type ElicitRequest {
-  ElicitRequest(message: String, requested_schema: Internal13)
+  ElicitRequest(message: String, requested_schema: Anon23ef5801)
 }
 
 pub type GetPromptRequest {
@@ -488,12 +487,12 @@ pub type ToolListChangedNotification {
 }
 
 pub type Jsonrpcerror {
-  Jsonrpcerror(error: Internal14, id: RequestId, jsonrpc: String)
+  Jsonrpcerror(error: Anon3a47e9cb, id: RequestId, jsonrpc: String)
 }
 
 pub type ListRootsRequest {
   ListRootsRequest(
-    meta: Option(Internal15),
+    meta: Option(Anon345b3036),
     additional_properties: dict.Dict(String, utils.Any),
   )
 }
@@ -528,7 +527,7 @@ pub type Jsonrpcnotification {
   Jsonrpcnotification(
     jsonrpc: String,
     method_: String,
-    params: Option(Internal16),
+    params: Option(AnonD071168d),
   )
 }
 
@@ -561,99 +560,62 @@ pub type TextContent {
   )
 }
 
-pub type Internal0 {
-  Internal0(
-    progress_token: Option(ProgressToken),
+pub type Anon8593718a {
+  Anon8593718a(
+    meta: Option(Anon345b3036),
     additional_properties: dict.Dict(String, utils.Any),
   )
 }
 
-pub type Internal1 {
-  Internal1(
-    meta: Option(Internal0),
-    additional_properties: dict.Dict(String, utils.Any),
-  )
-}
-
-pub type Internal2 {
-  Internal2(
-    progress_token: Option(ProgressToken),
-    additional_properties: dict.Dict(String, utils.Any),
-  )
-}
-
-pub type Internal3 {
-  Internal3(
-    progress_token: Option(ProgressToken),
-    additional_properties: dict.Dict(String, utils.Any),
-  )
-}
-
-pub type Internal4 {
-  Internal4(list_changed: Option(Bool))
-}
-
-pub type Internal5 {
-  Internal5(
+pub type AnonA5a007cd {
+  AnonA5a007cd(
     properties: Option(dict.Dict(String, dict.Dict(String, utils.Any))),
     required: Option(List(String)),
     type_: String,
   )
 }
 
-pub type Internal6 {
-  Internal6(
-    properties: Option(dict.Dict(String, dict.Dict(String, utils.Any))),
-    required: Option(List(String)),
-    type_: String,
-  )
+pub type Anon68f425dd {
+  Anon68f425dd(name: String, value: String)
 }
 
-pub type Internal7 {
-  Internal7(name: String, value: String)
+pub type Anon4c2c4139 {
+  Anon4c2c4139(arguments: Option(dict.Dict(String, String)))
 }
 
-pub type Internal8 {
-  Internal8(arguments: Option(dict.Dict(String, String)))
+pub type Anon3889ba9d {
+  Anon3889ba9d(list_changed: Option(Bool), subscribe: Option(Bool))
 }
 
-pub type Internal9 {
-  Internal9(list_changed: Option(Bool))
+pub type Anon405cc9c3 {
+  Anon405cc9c3(list_changed: Option(Bool))
 }
 
-pub type Internal10 {
-  Internal10(list_changed: Option(Bool), subscribe: Option(Bool))
+pub type AnonA60b75a3 {
+  AnonA60b75a3(has_more: Option(Bool), total: Option(Int), values: List(String))
 }
 
-pub type Internal11 {
-  Internal11(list_changed: Option(Bool))
-}
-
-pub type Internal12 {
-  Internal12(has_more: Option(Bool), total: Option(Int), values: List(String))
-}
-
-pub type Internal13 {
-  Internal13(
+pub type Anon23ef5801 {
+  Anon23ef5801(
     properties: dict.Dict(String, PrimitiveSchemaDefinition),
     required: Option(List(String)),
     type_: String,
   )
 }
 
-pub type Internal14 {
-  Internal14(code: Int, data: Option(utils.Never), message: String)
+pub type Anon3a47e9cb {
+  Anon3a47e9cb(code: Int, data: Option(utils.Never), message: String)
 }
 
-pub type Internal15 {
-  Internal15(
+pub type Anon345b3036 {
+  Anon345b3036(
     progress_token: Option(ProgressToken),
     additional_properties: dict.Dict(String, utils.Any),
   )
 }
 
-pub type Internal16 {
-  Internal16(
+pub type AnonD071168d {
+  AnonD071168d(
     meta: Option(dict.Dict(String, utils.Any)),
     additional_properties: dict.Dict(String, utils.Any),
   )
@@ -704,7 +666,7 @@ pub type ClientNotification =
 pub type ServerNotification =
   utils.Any
 
-pub fn internal_16_decoder() {
+pub fn anon_d071168d_decoder() {
   use meta <- decode.optional_field(
     "_meta",
     None,
@@ -714,13 +676,13 @@ pub fn internal_16_decoder() {
     ["_meta"],
     utils.any_decoder(),
   )
-  decode.success(Internal16(
+  decode.success(AnonD071168d(
     meta: meta,
     additional_properties: additional_properties,
   ))
 }
 
-pub fn internal_16_encode(data: Internal16) {
+pub fn anon_d071168d_encode(data: AnonD071168d) {
   utils.object([
     #("_meta", json.nullable(data.meta, utils.dict(_, utils.any_to_json))),
     ..dict.to_list(
@@ -731,7 +693,7 @@ pub fn internal_16_encode(data: Internal16) {
   ])
 }
 
-pub fn internal_15_decoder() {
+pub fn anon_345b3036_decoder() {
   use progress_token <- decode.optional_field(
     "progressToken",
     None,
@@ -741,13 +703,13 @@ pub fn internal_15_decoder() {
     ["progressToken"],
     utils.any_decoder(),
   )
-  decode.success(Internal15(
+  decode.success(Anon345b3036(
     progress_token: progress_token,
     additional_properties: additional_properties,
   ))
 }
 
-pub fn internal_15_encode(data: Internal15) {
+pub fn anon_345b3036_encode(data: Anon345b3036) {
   utils.object([
     #(
       "progressToken",
@@ -761,7 +723,7 @@ pub fn internal_15_encode(data: Internal15) {
   ])
 }
 
-pub fn internal_14_decoder() {
+pub fn anon_3a47e9cb_decoder() {
   use code <- decode.field("code", decode.int)
   use data <- decode.optional_field(
     "data",
@@ -773,10 +735,10 @@ pub fn internal_14_decoder() {
     ),
   )
   use message <- decode.field("message", decode.string)
-  decode.success(Internal14(code: code, data: data, message: message))
+  decode.success(Anon3a47e9cb(code: code, data: data, message: message))
 }
 
-pub fn internal_14_encode(data: Internal14) {
+pub fn anon_3a47e9cb_encode(data: Anon3a47e9cb) {
   utils.object([
     #("code", json.int(data.code)),
     #(
@@ -789,7 +751,7 @@ pub fn internal_14_encode(data: Internal14) {
   ])
 }
 
-pub fn internal_13_decoder() {
+pub fn anon_23ef5801_decoder() {
   use properties <- decode.field(
     "properties",
     decode.dict(decode.string, primitive_schema_definition_decoder()),
@@ -800,14 +762,14 @@ pub fn internal_13_decoder() {
     decode.optional(decode.list(decode.string)),
   )
   use type_ <- decode.field("type", decode.string)
-  decode.success(Internal13(
+  decode.success(Anon23ef5801(
     properties: properties,
     required: required,
     type_: type_,
   ))
 }
 
-pub fn internal_13_encode(data: Internal13) {
+pub fn anon_23ef5801_encode(data: Anon23ef5801) {
   utils.object([
     #(
       "properties",
@@ -818,7 +780,7 @@ pub fn internal_13_encode(data: Internal13) {
   ])
 }
 
-pub fn internal_12_decoder() {
+pub fn anon_a60b75a3_decoder() {
   use has_more <- decode.optional_field(
     "hasMore",
     None,
@@ -826,10 +788,10 @@ pub fn internal_12_decoder() {
   )
   use total <- decode.optional_field("total", None, decode.optional(decode.int))
   use values <- decode.field("values", decode.list(decode.string))
-  decode.success(Internal12(has_more: has_more, total: total, values: values))
+  decode.success(AnonA60b75a3(has_more: has_more, total: total, values: values))
 }
 
-pub fn internal_12_encode(data: Internal12) {
+pub fn anon_a60b75a3_encode(data: AnonA60b75a3) {
   utils.object([
     #("hasMore", json.nullable(data.has_more, json.bool)),
     #("total", json.nullable(data.total, json.int)),
@@ -837,20 +799,20 @@ pub fn internal_12_encode(data: Internal12) {
   ])
 }
 
-pub fn internal_11_decoder() {
+pub fn anon_405cc9c3_decoder() {
   use list_changed <- decode.optional_field(
     "listChanged",
     None,
     decode.optional(decode.bool),
   )
-  decode.success(Internal11(list_changed: list_changed))
+  decode.success(Anon405cc9c3(list_changed: list_changed))
 }
 
-pub fn internal_11_encode(data: Internal11) {
+pub fn anon_405cc9c3_encode(data: Anon405cc9c3) {
   utils.object([#("listChanged", json.nullable(data.list_changed, json.bool))])
 }
 
-pub fn internal_10_decoder() {
+pub fn anon_3889ba9d_decoder() {
   use list_changed <- decode.optional_field(
     "listChanged",
     None,
@@ -861,58 +823,45 @@ pub fn internal_10_decoder() {
     None,
     decode.optional(decode.bool),
   )
-  decode.success(Internal10(list_changed: list_changed, subscribe: subscribe))
+  decode.success(Anon3889ba9d(list_changed: list_changed, subscribe: subscribe))
 }
 
-pub fn internal_10_encode(data: Internal10) {
+pub fn anon_3889ba9d_encode(data: Anon3889ba9d) {
   utils.object([
     #("listChanged", json.nullable(data.list_changed, json.bool)),
     #("subscribe", json.nullable(data.subscribe, json.bool)),
   ])
 }
 
-pub fn internal_9_decoder() {
-  use list_changed <- decode.optional_field(
-    "listChanged",
-    None,
-    decode.optional(decode.bool),
-  )
-  decode.success(Internal9(list_changed: list_changed))
-}
-
-pub fn internal_9_encode(data: Internal9) {
-  utils.object([#("listChanged", json.nullable(data.list_changed, json.bool))])
-}
-
-pub fn internal_8_decoder() {
+pub fn anon_4c2c4139_decoder() {
   use arguments <- decode.optional_field(
     "arguments",
     None,
     decode.optional(decode.dict(decode.string, decode.string)),
   )
-  decode.success(Internal8(arguments: arguments))
+  decode.success(Anon4c2c4139(arguments: arguments))
 }
 
-pub fn internal_8_encode(data: Internal8) {
+pub fn anon_4c2c4139_encode(data: Anon4c2c4139) {
   utils.object([
     #("arguments", json.nullable(data.arguments, utils.dict(_, json.string))),
   ])
 }
 
-pub fn internal_7_decoder() {
+pub fn anon_68f425dd_decoder() {
   use name <- decode.field("name", decode.string)
   use value <- decode.field("value", decode.string)
-  decode.success(Internal7(name: name, value: value))
+  decode.success(Anon68f425dd(name: name, value: value))
 }
 
-pub fn internal_7_encode(data: Internal7) {
+pub fn anon_68f425dd_encode(data: Anon68f425dd) {
   utils.object([
     #("name", json.string(data.name)),
     #("value", json.string(data.value)),
   ])
 }
 
-pub fn internal_6_decoder() {
+pub fn anon_a5a007cd_decoder() {
   use properties <- decode.optional_field(
     "properties",
     None,
@@ -927,14 +876,14 @@ pub fn internal_6_decoder() {
     decode.optional(decode.list(decode.string)),
   )
   use type_ <- decode.field("type", decode.string)
-  decode.success(Internal6(
+  decode.success(AnonA5a007cd(
     properties: properties,
     required: required,
     type_: type_,
   ))
 }
 
-pub fn internal_6_encode(data: Internal6) {
+pub fn anon_a5a007cd_encode(data: AnonA5a007cd) {
   utils.object([
     #(
       "properties",
@@ -948,164 +897,25 @@ pub fn internal_6_encode(data: Internal6) {
   ])
 }
 
-pub fn internal_5_decoder() {
-  use properties <- decode.optional_field(
-    "properties",
-    None,
-    decode.optional(decode.dict(
-      decode.string,
-      decode.dict(decode.string, utils.any_decoder()),
-    )),
-  )
-  use required <- decode.optional_field(
-    "required",
-    None,
-    decode.optional(decode.list(decode.string)),
-  )
-  use type_ <- decode.field("type", decode.string)
-  decode.success(Internal5(
-    properties: properties,
-    required: required,
-    type_: type_,
-  ))
-}
-
-pub fn internal_5_encode(data: Internal5) {
-  utils.object([
-    #(
-      "properties",
-      json.nullable(
-        data.properties,
-        utils.dict(_, utils.dict(_, utils.any_to_json)),
-      ),
-    ),
-    #("required", json.nullable(data.required, json.array(_, json.string))),
-    #("type", json.string(data.type_)),
-  ])
-}
-
-pub fn internal_4_decoder() {
-  use list_changed <- decode.optional_field(
-    "listChanged",
-    None,
-    decode.optional(decode.bool),
-  )
-  decode.success(Internal4(list_changed: list_changed))
-}
-
-pub fn internal_4_encode(data: Internal4) {
-  utils.object([#("listChanged", json.nullable(data.list_changed, json.bool))])
-}
-
-pub fn internal_3_decoder() {
-  use progress_token <- decode.optional_field(
-    "progressToken",
-    None,
-    decode.optional(progress_token_decoder()),
-  )
-  use additional_properties <- utils.decode_additional(
-    ["progressToken"],
-    utils.any_decoder(),
-  )
-  decode.success(Internal3(
-    progress_token: progress_token,
-    additional_properties: additional_properties,
-  ))
-}
-
-pub fn internal_3_encode(data: Internal3) {
-  utils.object([
-    #(
-      "progressToken",
-      json.nullable(data.progress_token, progress_token_encode),
-    ),
-    ..dict.to_list(
-      dict.map_values(data.additional_properties, fn(_key, value) {
-        utils.any_to_json(value)
-      }),
-    )
-  ])
-}
-
-pub fn internal_2_decoder() {
-  use progress_token <- decode.optional_field(
-    "progressToken",
-    None,
-    decode.optional(progress_token_decoder()),
-  )
-  use additional_properties <- utils.decode_additional(
-    ["progressToken"],
-    utils.any_decoder(),
-  )
-  decode.success(Internal2(
-    progress_token: progress_token,
-    additional_properties: additional_properties,
-  ))
-}
-
-pub fn internal_2_encode(data: Internal2) {
-  utils.object([
-    #(
-      "progressToken",
-      json.nullable(data.progress_token, progress_token_encode),
-    ),
-    ..dict.to_list(
-      dict.map_values(data.additional_properties, fn(_key, value) {
-        utils.any_to_json(value)
-      }),
-    )
-  ])
-}
-
-pub fn internal_1_decoder() {
+pub fn anon_8593718a_decoder() {
   use meta <- decode.optional_field(
     "_meta",
     None,
-    decode.optional(internal_0_decoder()),
+    decode.optional(anon_345b3036_decoder()),
   )
   use additional_properties <- utils.decode_additional(
     ["_meta"],
     utils.any_decoder(),
   )
-  decode.success(Internal1(
+  decode.success(Anon8593718a(
     meta: meta,
     additional_properties: additional_properties,
   ))
 }
 
-pub fn internal_1_encode(data: Internal1) {
+pub fn anon_8593718a_encode(data: Anon8593718a) {
   utils.object([
-    #("_meta", json.nullable(data.meta, internal_0_encode)),
-    ..dict.to_list(
-      dict.map_values(data.additional_properties, fn(_key, value) {
-        utils.any_to_json(value)
-      }),
-    )
-  ])
-}
-
-pub fn internal_0_decoder() {
-  use progress_token <- decode.optional_field(
-    "progressToken",
-    None,
-    decode.optional(progress_token_decoder()),
-  )
-  use additional_properties <- utils.decode_additional(
-    ["progressToken"],
-    utils.any_decoder(),
-  )
-  decode.success(Internal0(
-    progress_token: progress_token,
-    additional_properties: additional_properties,
-  ))
-}
-
-pub fn internal_0_encode(data: Internal0) {
-  utils.object([
-    #(
-      "progressToken",
-      json.nullable(data.progress_token, progress_token_encode),
-    ),
+    #("_meta", json.nullable(data.meta, anon_345b3036_encode)),
     ..dict.to_list(
       dict.map_values(data.additional_properties, fn(_key, value) {
         utils.any_to_json(value)
@@ -1229,7 +1039,7 @@ pub fn jsonrpcnotification_decoder() {
   use params <- decode.optional_field(
     "params",
     None,
-    decode.optional(internal_16_decoder()),
+    decode.optional(anon_d071168d_decoder()),
   )
   decode.success(Jsonrpcnotification(
     jsonrpc: jsonrpc,
@@ -1242,7 +1052,7 @@ pub fn jsonrpcnotification_encode(data: Jsonrpcnotification) {
   utils.object([
     #("jsonrpc", json.string(data.jsonrpc)),
     #("method", json.string(data.method_)),
-    #("params", json.nullable(data.params, internal_16_encode)),
+    #("params", json.nullable(data.params, anon_d071168d_encode)),
   ])
 }
 
@@ -1339,7 +1149,7 @@ pub fn list_roots_request_decoder() {
   use meta <- decode.optional_field(
     "_meta",
     None,
-    decode.optional(internal_15_decoder()),
+    decode.optional(anon_345b3036_decoder()),
   )
   use additional_properties <- utils.decode_additional(
     ["_meta"],
@@ -1353,7 +1163,7 @@ pub fn list_roots_request_decoder() {
 
 pub fn list_roots_request_encode(data: ListRootsRequest) {
   utils.object([
-    #("_meta", json.nullable(data.meta, internal_15_encode)),
+    #("_meta", json.nullable(data.meta, anon_345b3036_encode)),
     ..dict.to_list(
       dict.map_values(data.additional_properties, fn(_key, value) {
         utils.any_to_json(value)
@@ -1363,7 +1173,7 @@ pub fn list_roots_request_encode(data: ListRootsRequest) {
 }
 
 pub fn jsonrpcerror_decoder() {
-  use error <- decode.field("error", internal_14_decoder())
+  use error <- decode.field("error", anon_3a47e9cb_decoder())
   use id <- decode.field("id", request_id_decoder())
   use jsonrpc <- decode.field("jsonrpc", decode.string)
   decode.success(Jsonrpcerror(error: error, id: id, jsonrpc: jsonrpc))
@@ -1371,7 +1181,7 @@ pub fn jsonrpcerror_decoder() {
 
 pub fn jsonrpcerror_encode(data: Jsonrpcerror) {
   utils.object([
-    #("error", internal_14_encode(data.error)),
+    #("error", anon_3a47e9cb_encode(data.error)),
     #("id", request_id_encode(data.id)),
     #("jsonrpc", json.string(data.jsonrpc)),
   ])
@@ -1479,7 +1289,10 @@ pub fn get_prompt_request_encode(data: GetPromptRequest) {
 
 pub fn elicit_request_decoder() {
   use message <- decode.field("message", decode.string)
-  use requested_schema <- decode.field("requestedSchema", internal_13_decoder())
+  use requested_schema <- decode.field(
+    "requestedSchema",
+    anon_23ef5801_decoder(),
+  )
   decode.success(ElicitRequest(
     message: message,
     requested_schema: requested_schema,
@@ -1489,7 +1302,7 @@ pub fn elicit_request_decoder() {
 pub fn elicit_request_encode(data: ElicitRequest) {
   utils.object([
     #("message", json.string(data.message)),
-    #("requestedSchema", internal_13_encode(data.requested_schema)),
+    #("requestedSchema", anon_23ef5801_encode(data.requested_schema)),
   ])
 }
 
@@ -1625,14 +1438,14 @@ pub fn complete_result_decoder() {
     None,
     decode.optional(decode.dict(decode.string, utils.any_decoder())),
   )
-  use completion <- decode.field("completion", internal_12_decoder())
+  use completion <- decode.field("completion", anon_a60b75a3_decoder())
   decode.success(CompleteResult(meta: meta, completion: completion))
 }
 
 pub fn complete_result_encode(data: CompleteResult) {
   utils.object([
     #("_meta", json.nullable(data.meta, utils.dict(_, utils.any_to_json))),
-    #("completion", internal_12_encode(data.completion)),
+    #("completion", anon_a60b75a3_encode(data.completion)),
   ])
 }
 
@@ -1807,17 +1620,17 @@ pub fn server_capabilities_decoder() {
   use prompts <- decode.optional_field(
     "prompts",
     None,
-    decode.optional(internal_9_decoder()),
+    decode.optional(anon_405cc9c3_decoder()),
   )
   use resources <- decode.optional_field(
     "resources",
     None,
-    decode.optional(internal_10_decoder()),
+    decode.optional(anon_3889ba9d_decoder()),
   )
   use tools <- decode.optional_field(
     "tools",
     None,
-    decode.optional(internal_11_decoder()),
+    decode.optional(anon_405cc9c3_decoder()),
   )
   decode.success(ServerCapabilities(
     completions: completions,
@@ -1843,9 +1656,9 @@ pub fn server_capabilities_encode(data: ServerCapabilities) {
       ),
     ),
     #("logging", json.nullable(data.logging, utils.dict(_, utils.any_to_json))),
-    #("prompts", json.nullable(data.prompts, internal_9_encode)),
-    #("resources", json.nullable(data.resources, internal_10_encode)),
-    #("tools", json.nullable(data.tools, internal_11_encode)),
+    #("prompts", json.nullable(data.prompts, anon_405cc9c3_encode)),
+    #("resources", json.nullable(data.resources, anon_3889ba9d_encode)),
+    #("tools", json.nullable(data.tools, anon_405cc9c3_encode)),
   ])
 }
 
@@ -1951,11 +1764,11 @@ pub fn embedded_resource_encode(data: EmbeddedResource) {
 }
 
 pub fn complete_request_decoder() {
-  use argument <- decode.field("argument", internal_7_decoder())
+  use argument <- decode.field("argument", anon_68f425dd_decoder())
   use context <- decode.optional_field(
     "context",
     None,
-    decode.optional(internal_8_decoder()),
+    decode.optional(anon_4c2c4139_decoder()),
   )
   use ref <- decode.field("ref", utils.any_decoder())
   decode.success(CompleteRequest(argument: argument, context: context, ref: ref))
@@ -1963,8 +1776,8 @@ pub fn complete_request_decoder() {
 
 pub fn complete_request_encode(data: CompleteRequest) {
   utils.object([
-    #("argument", internal_7_encode(data.argument)),
-    #("context", json.nullable(data.context, internal_8_encode)),
+    #("argument", anon_68f425dd_encode(data.argument)),
+    #("context", json.nullable(data.context, anon_4c2c4139_encode)),
     #("ref", utils.any_to_json(data.ref)),
   ])
 }
@@ -2261,12 +2074,12 @@ pub fn tool_decoder() {
     None,
     decode.optional(decode.string),
   )
-  use input_schema <- decode.field("inputSchema", internal_5_decoder())
+  use input_schema <- decode.field("inputSchema", anon_a5a007cd_decoder())
   use name <- decode.field("name", decode.string)
   use output_schema <- decode.optional_field(
     "outputSchema",
     None,
-    decode.optional(internal_6_decoder()),
+    decode.optional(anon_a5a007cd_decoder()),
   )
   use title <- decode.optional_field(
     "title",
@@ -2289,9 +2102,9 @@ pub fn tool_encode(data: Tool) {
     #("_meta", json.nullable(data.meta, utils.dict(_, utils.any_to_json))),
     #("annotations", json.nullable(data.annotations, tool_annotations_encode)),
     #("description", json.nullable(data.description, json.string)),
-    #("inputSchema", internal_5_encode(data.input_schema)),
+    #("inputSchema", anon_a5a007cd_encode(data.input_schema)),
     #("name", json.string(data.name)),
-    #("outputSchema", json.nullable(data.output_schema, internal_6_encode)),
+    #("outputSchema", json.nullable(data.output_schema, anon_a5a007cd_encode)),
     #("title", json.nullable(data.title, json.string)),
   ])
 }
@@ -2845,7 +2658,7 @@ pub fn client_capabilities_decoder() {
   use roots <- decode.optional_field(
     "roots",
     None,
-    decode.optional(internal_4_decoder()),
+    decode.optional(anon_405cc9c3_decoder()),
   )
   use sampling <- decode.optional_field(
     "sampling",
@@ -2873,7 +2686,7 @@ pub fn client_capabilities_encode(data: ClientCapabilities) {
         utils.dict(_, utils.dict(_, utils.any_to_json)),
       ),
     ),
-    #("roots", json.nullable(data.roots, internal_4_encode)),
+    #("roots", json.nullable(data.roots, anon_405cc9c3_encode)),
     #(
       "sampling",
       json.nullable(data.sampling, utils.dict(_, utils.any_to_json)),
@@ -2924,7 +2737,7 @@ pub fn request_decoder() {
   use meta <- decode.optional_field(
     "_meta",
     None,
-    decode.optional(internal_3_decoder()),
+    decode.optional(anon_345b3036_decoder()),
   )
   use additional_properties <- utils.decode_additional(
     ["_meta"],
@@ -2938,7 +2751,7 @@ pub fn request_decoder() {
 
 pub fn request_encode(data: Request) {
   utils.object([
-    #("_meta", json.nullable(data.meta, internal_3_encode)),
+    #("_meta", json.nullable(data.meta, anon_345b3036_encode)),
     ..dict.to_list(
       dict.map_values(data.additional_properties, fn(_key, value) {
         utils.any_to_json(value)
@@ -2980,7 +2793,7 @@ pub fn ping_request_decoder() {
   use meta <- decode.optional_field(
     "_meta",
     None,
-    decode.optional(internal_2_decoder()),
+    decode.optional(anon_345b3036_decoder()),
   )
   use additional_properties <- utils.decode_additional(
     ["_meta"],
@@ -2994,7 +2807,7 @@ pub fn ping_request_decoder() {
 
 pub fn ping_request_encode(data: PingRequest) {
   utils.object([
-    #("_meta", json.nullable(data.meta, internal_2_encode)),
+    #("_meta", json.nullable(data.meta, anon_345b3036_encode)),
     ..dict.to_list(
       dict.map_values(data.additional_properties, fn(_key, value) {
         utils.any_to_json(value)
@@ -3102,7 +2915,7 @@ pub fn jsonrpcrequest_decoder() {
   use params <- decode.optional_field(
     "params",
     None,
-    decode.optional(internal_1_decoder()),
+    decode.optional(anon_8593718a_decoder()),
   )
   decode.success(Jsonrpcrequest(
     id: id,
@@ -3117,7 +2930,7 @@ pub fn jsonrpcrequest_encode(data: Jsonrpcrequest) {
     #("id", request_id_encode(data.id)),
     #("jsonrpc", json.string(data.jsonrpc)),
     #("method", json.string(data.method_)),
-    #("params", json.nullable(data.params, internal_1_encode)),
+    #("params", json.nullable(data.params, anon_8593718a_encode)),
   ])
 }
 

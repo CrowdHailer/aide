@@ -30,7 +30,7 @@ pub fn main() {
     generator.gen_schema_file(definitions)
     |> generator.run_single_location("#/definitions/")
   let assert Ok(Nil) =
-    simplifile.write("./src/aide/mcp/definitions.gleam", contents)
+    simplifile.write("./src/aide/definitions.gleam", contents)
 }
 
 fn is_request(key) {

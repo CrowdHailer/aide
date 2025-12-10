@@ -422,9 +422,9 @@ fn initialize(_message, server) {
       completions: Some(dict.new()),
       experimental: None,
       logging: Some(dict.new()),
-      prompts: Some(definitions.Internal9(list_changed: Some(True))),
-      tools: Some(definitions.Internal11(list_changed: Some(False))),
-      resources: Some(definitions.Internal10(
+      prompts: Some(definitions.Anon405cc9c3(list_changed: Some(True))),
+      tools: Some(definitions.Anon405cc9c3(list_changed: Some(False))),
+      resources: Some(definitions.Anon3889ba9d(
         subscribe: Some(False),
         list_changed: Some(False),
       )),
@@ -518,11 +518,11 @@ fn get_prompt(message, server) {
 fn complete(message) {
   let definitions.CompleteRequest(context:, argument:, ref:) = message
 
-  let definitions.Internal7(name:, value:) = argument
+  let definitions.Anon68f425dd(name:, value:) = argument
   let argument = effect.CompleteArgument(name:, value:)
 
   let context = case context {
-    Some(definitions.Internal8(arguments: Some(previous))) -> previous
+    Some(definitions.Anon4c2c4139(arguments: Some(previous))) -> previous
     _ -> dict.new()
   }
   let assert utils.Object(properties) = ref
@@ -551,7 +551,11 @@ fn complete_results(values) {
     True -> #(list.take(values, 100), True)
     False -> #(values, False)
   }
-  definitions.Internal12(values:, has_more: Some(has_more), total: Some(total))
+  definitions.AnonA60b75a3(
+    values:,
+    has_more: Some(has_more),
+    total: Some(total),
+  )
   |> definitions.CompleteResult(None, _)
 }
 
