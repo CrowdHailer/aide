@@ -124,12 +124,28 @@ pub fn request_encode(request, request_encode, notification_encode) {
   }
 }
 
-pub type Response(t) {
-  Response(version: String, id: Id, return: Result(t, ErrorObject))
-}
-
 pub type ErrorObject {
   ErrorObject(code: Int, message: String, data: utils.Any)
+}
+
+fn error_object_decoder() {
+  use code <- decode.field("code", decode.int)
+  use message <- decode.field("message", decode.string)
+  use data <- decode.optional_field("data", utils.Null, utils.any_decoder())
+  decode.success(ErrorObject(code:, message:, data:))
+}
+
+fn error_object_encode(obj) {
+  let ErrorObject(code:, message:, data:) = obj
+  json.object([
+    #("code", json.int(code)),
+    #("message", json.string(message)),
+    #("data", utils.any_to_json(data)),
+  ])
+}
+
+pub type Response(t) {
+  Response(version: String, id: Id, return: Result(t, ErrorObject))
 }
 
 pub fn response(id, result) {
@@ -140,6 +156,26 @@ pub fn result(id, result) {
   Response(jsonrpc, id, Ok(result))
 }
 
+pub fn response_decoder(return_decoder) {
+  use version <- decode.field("jsonrpc", decode.string)
+  use id <- decode.field("id", id_decoder())
+  use return <- decode.then(
+    decode.one_of(
+      {
+        use value <- decode.field("result", return_decoder)
+        decode.success(Ok(value))
+      },
+      [
+        {
+          use reason <- decode.field("error", error_object_decoder())
+          decode.success(Error(reason))
+        },
+      ],
+    ),
+  )
+  decode.success(Response(version:, id:, return:))
+}
+
 pub fn response_encode(response, return_encode) {
   let Response(version:, id:, return:) = response
 
@@ -148,14 +184,7 @@ pub fn response_encode(response, return_encode) {
     #("id", id_encode(id)),
     case return {
       Ok(value) -> #("result", return_encode(value))
-      Error(ErrorObject(code:, message:, data:)) -> #(
-        "error",
-        json.object([
-          #("code", json.int(code)),
-          #("message", json.string(message)),
-          #("data", utils.any_to_json(data)),
-        ]),
-      )
+      Error(obj) -> #("error", error_object_encode(obj))
     },
   ])
 }

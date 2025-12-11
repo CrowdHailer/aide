@@ -203,6 +203,10 @@ pub type ServerResult {
   CompleteResult(definitions.CompleteResult)
 }
 
+pub fn response_decoder(expected) {
+  json_rpc.response_decoder(expected)
+}
+
 pub fn response_encode(response) {
   json_rpc.response_encode(response, do_response_encode)
 }
