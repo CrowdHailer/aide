@@ -1,21 +1,21 @@
 import aide/definitions
+import castor
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/list
 import gleam/option.{None, Some}
-import oas/json_schema
 
 fn cast_schema(args) {
   let #(required, properties) =
     list.map_fold(args, [], fn(acc, arg) {
       let #(name, schema, required) = arg
-      let assert json_schema.Inline(schema) = schema
+      let assert castor.Inline(schema) = schema
 
       let acc = case required {
         True -> [name, ..acc]
         False -> acc
       }
-      #(acc, #(name, json_schema.to_fields(schema)))
+      #(acc, #(name, castor.to_fields(schema)))
     })
   definitions.AnonA5a007cd(
     type_: "object",
@@ -70,6 +70,6 @@ pub fn to_api_definition(tool) {
 }
 
 pub type ObjectSchema =
-  List(#(String, json_schema.Ref(json_schema.Schema), Bool))
+  List(#(String, castor.Ref(castor.Schema), Bool))
 // Add description etc to spec?
 // Spec to definitions function in here

@@ -1,16 +1,16 @@
+import castor
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/json
 import gleam/string
 import oas/generator
-import oas/json_schema
 import simplifile
 
 pub fn main() {
   let decoder =
     decode.field(
       "definitions",
-      decode.dict(decode.string, json_schema.decoder()),
+      decode.dict(decode.string, castor.decoder()),
       decode.success,
     )
 
@@ -52,12 +52,10 @@ fn is_notification(key) {
 
 fn lift_params(value) {
   case value {
-    json_schema.Object(properties: p, ..) ->
+    castor.Object(properties: p, ..) ->
       case dict.size(p), dict.get(p, "method"), dict.get(p, "params") {
-        2,
-          Ok(json_schema.Inline(json_schema.String(..))),
-          Ok(json_schema.Inline(params))
-        -> params
+        2, Ok(castor.Inline(castor.String(..))), Ok(castor.Inline(params)) ->
+          params
         _, _, _ -> panic as "method and params should be string and object"
       }
     _ -> panic as "Request should be an object"

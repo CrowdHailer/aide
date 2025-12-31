@@ -1,8 +1,6 @@
 import aide/definitions
 import aide/effect
-import aide/json_rpc
 import aide/log
-import aide/reason
 import aide/tool
 import gleam/dict
 import gleam/dynamic/decode
@@ -13,9 +11,11 @@ import gleam/option.{None, Some}
 import gleam/pair
 import gleam/result
 import oas/generator/utils
+import pollux
+import pollux/reason
 
 pub fn request_decoder() {
-  json_rpc.request_decoder(
+  pollux.request_decoder(
     request_decoders(),
     notification_decoders(),
     Initialized(definitions.InitializedNotification(None, dict.new())),
@@ -23,7 +23,7 @@ pub fn request_decoder() {
 }
 
 pub fn request_encode(request) {
-  json_rpc.request_encode(request, do_request_encode, do_notification_encode)
+  pollux.request_encode(request, do_request_encode, do_notification_encode)
 }
 
 fn do_request_encode(request) {
@@ -204,11 +204,11 @@ pub type ServerResult {
 }
 
 pub fn response_decoder(expected) {
-  json_rpc.response_decoder(expected)
+  pollux.response_decoder(expected)
 }
 
 pub fn response_encode(response) {
-  json_rpc.response_encode(response, do_response_encode)
+  pollux.response_encode(response, do_response_encode)
 }
 
 fn do_response_encode(result) {
@@ -261,29 +261,29 @@ pub fn get_prompt_by_name(server, name) {
 
 pub fn handle_rpc(request, server: Server(a, b)) {
   case request {
-    json_rpc.Request(id:, value:, ..) ->
+    pollux.Request(id:, value:, ..) ->
       case handle_request(value, server) {
         effect.Done(return) -> {
-          json_rpc.response(id, return) |> Some |> effect.Done
+          pollux.response(id, return) |> Some |> effect.Done
         }
         effect.CallTool(tool, resume) ->
           effect.CallTool(tool, fn(reply) {
-            json_rpc.response(id, resume(reply)) |> Some
+            pollux.response(id, resume(reply)) |> Some
           })
         effect.ReadResource(resource, resume) ->
           effect.ReadResource(resource, fn(reply) {
-            json_rpc.response(id, resume(reply)) |> Some
+            pollux.response(id, resume(reply)) |> Some
           })
         effect.GetPrompt(prompt, resume) ->
           effect.GetPrompt(prompt, fn(reply) {
-            json_rpc.response(id, resume(reply)) |> Some
+            pollux.response(id, resume(reply)) |> Some
           })
         effect.Complete(ref, argument, context, resume) ->
           effect.Complete(ref, argument, context, fn(reply) {
-            json_rpc.response(id, resume(reply)) |> Some
+            pollux.response(id, resume(reply)) |> Some
           })
       }
-    json_rpc.Notification(value:, ..) -> {
+    pollux.Notification(value:, ..) -> {
       let Nil = handle_notification(value, server)
       effect.Done(None)
     }
